@@ -75,7 +75,7 @@ export default {
 
         // load in the google map
         onMounted(() => {
-            const key = "AIzaSyBsnmxdPEZ5PcfanWUVQdsaMwfdsalAjoB0rTtKSSVA";
+            const key = "AIzaSyAD8GTQRF_yUFZcgfUf9eFWlEGoBpe7LwU";
 
             const googleMapScript = document.createElement("script");
             googleMapScript.setAttribute(
