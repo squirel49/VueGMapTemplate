@@ -4,7 +4,7 @@
         <input class="autocomplete" id="auto_input" ref="destination_input" v-on:change="destChanged" placeholder="Destination" type="text"/>
     </div>
     <div class="map" ref="mapDivRef"></div>
-    <div id="directionsPanel" ref="directionPanelRef" style="float:right"></div>
+    <div hidden="true" id="directionsPanel" ref="directionPanelRef" style="float:right"></div>
 </template>
 
 
