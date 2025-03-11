@@ -124,6 +124,10 @@ export default{
       const markers = ref([{lat: 51.327040, lng: -0.227660, title:"<strong>Home</strong>"}, {lat: 51.4271, lng: -0.0383, title:"<strong>Issac's</strong>"}])
       const markers2 = ref([{lat: 51.51695758745701, lng:  -0.1769174221255329, title:"Paddington"}])
 
+      // const backend_ip = '127.0.0.1:5000';
+      const backend_ip = '13.40.173.100';
+
+
       // datetime
       // set to current datetime and remove Z to standardize format 
       const selectedDate = ref(new Date().toISOString().slice(0,-1));
@@ -137,6 +141,7 @@ export default{
         selectedDate.value = e.detail.value;
         date_time_changed.value = true;
       };
+
 
       // waypoints
       const waypoints_received = ref(false);
@@ -365,7 +370,7 @@ export default{
 
       async function exploreWalk() {
         // remove title in case it contains "&"
-        const request_str = "http://127.0.0.1:5000/get_walk_waypoints?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination));
+        const request_str = "http://" + backend_ip + "/get_walk_waypoints?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination));
         await fetch(request_str, {credentials: 'include'})
             .then(response => response.json())
             .then(data => {
@@ -412,7 +417,7 @@ export default{
 
       async function waypointsConfirmed() {
         // waypoints have been confirmed, route through them, with given mode
-        const request_str = "http://127.0.0.1:5000/alternate_walks?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination)) + "&waypoints=" + JSON.stringify(stripPoint(store.chosen_waypoints)) + "&waypoint_mode=" + JSON.stringify(store.waypoint_mode) + "&waypoints_ordered=" +JSON.stringify(store.waypoints_ordered);
+        const request_str = "http://" + backend_ip + "/alternate_walks?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination)) + "&waypoints=" + JSON.stringify(stripPoint(store.chosen_waypoints)) + "&waypoint_mode=" + JSON.stringify(store.waypoint_mode) + "&waypoints_ordered=" +JSON.stringify(store.waypoints_ordered);
         await fetch(request_str, {credentials: 'include'})
             .then(response => response.json())
             .then(data => {
@@ -470,7 +475,7 @@ export default{
         if (!(g_map_ref.value.origin instanceof Object & g_map_ref.value.destination instanceof Object)) {
           console.log('Both origin and destination need to be input');
         } else {
-          const request_str = "http://127.0.0.1:5000/get_station_routes?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(g_map_ref.value.origin) + "&destination=" + JSON.stringify(g_map_ref.value.destination);
+          const request_str = "http://" + backend_ip + "/get_station_routes?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(g_map_ref.value.origin) + "&destination=" + JSON.stringify(g_map_ref.value.destination);
           await fetch(request_str, {credentials: 'include'})
             .then(response => response.json())
             .then(data => {
@@ -524,7 +529,7 @@ export default{
             store.transit_route_id = route_id;
           };
 
-          const request_str = "http://127.0.0.1:5000/transit_alternate_walks?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination)) + "&selected_route=" + JSON.stringify(current_tranit_route.value);
+          const request_str = "http://" + backend_ip + "/transit_alternate_walks?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination)) + "&selected_route=" + JSON.stringify(current_tranit_route.value);
           await fetch(request_str, {credentials: 'include'})
               .then(response => response.json())
               .then(data => {
