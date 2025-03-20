@@ -10,6 +10,7 @@ export default defineConfig({
     legacy()
   ],
   server: {
+    allowedHosts: ['pathslesstravelled.xyz'],
     host: true,
     port: 80
   },
