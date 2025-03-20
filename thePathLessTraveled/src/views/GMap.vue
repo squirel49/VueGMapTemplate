@@ -222,7 +222,6 @@ export default {
             } else {
                 map.value.setCenter(current_markers[0].position);
             }
-
         };
 
 
@@ -567,7 +566,7 @@ export default {
                         waypoint.location.lat,
                         waypoint.location.lng
                     ), stopover: false});
-            }
+            };
 
             // Unlike other Google maps services, directions will only take lat and lng values as floats.
             origin['lat'] = parseFloat(origin['lat']);
@@ -764,6 +763,7 @@ export default {
             destination,
             oriChanged,
             destChanged,
+            calcMapBounds,
             allowMarkerPlacing,
             revokeMarkerPlacing,
             revokeMarkerRemoval,

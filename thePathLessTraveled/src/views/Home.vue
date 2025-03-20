@@ -2,10 +2,15 @@
   <ion-menu content-id="main-content">
     <ion-header>
       <ion-toolbar>
-        <ion-title>Menu Content</ion-title>
+        <ion-title>Menu</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding">This is the menu content.</ion-content>
+    <ion-content class="ion-padding">
+      <nav>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
+    </ion-content>
+
   </ion-menu>
   <ion-page id="main-content">
     <ion-content>
@@ -85,6 +90,7 @@ import GMap from './GMap.vue';
 import RouteSelector from './RouteSelector.vue';
 import WaypointManager from './WaypointManager.vue';
 import RouteStats from './RouteStats.vue'
+import { RouterLink } from 'vue-router';
 
 export default{
     name: "Home",
@@ -124,8 +130,8 @@ export default{
       const markers = ref([{lat: 51.327040, lng: -0.227660, title:"<strong>Home</strong>"}, {lat: 51.4271, lng: -0.0383, title:"<strong>Issac's</strong>"}])
       const markers2 = ref([{lat: 51.51695758745701, lng:  -0.1769174221255329, title:"Paddington"}])
 
-      // const backend_ip = '127.0.0.1:5000';
-      const backend_ip = '13.40.173.100';
+      const backend_ip = '127.0.0.1:5000';
+      //const backend_ip = '13.40.173.100';
 
 
       // datetime
@@ -454,8 +460,18 @@ export default{
           current_origin = g_map_ref.value.origin;
           current_destination = g_map_ref.value.destination;
 
+          // if a route exists
           if (store.route_number != 0) {
-            current_origin = store.chosen_waypoints[store.route_number-1]['location'];
+            // try to find the next route
+            if (store.route_number-1 in store.chosen_waypoints){
+              current_origin = store.chosen_waypoints[store.route_number-1]['location'];
+            // if there is no next route we have finished.  
+            } else {
+              store.walk_state = 'complete';
+              // pass back
+              walkConfirmed();
+              return;
+            }
           };
 
           if (store.route_number+1 < walking_routes.value.length){
@@ -825,9 +841,9 @@ export default{
           store.walk_state = "destination";
           loadDestinationWalks();
         } else {
-          store.walk_state = "complete";
           routes.value = [];
           train_routed.value = false;
+          g_map_ref.value.calcMapBounds()
         };
       };
 

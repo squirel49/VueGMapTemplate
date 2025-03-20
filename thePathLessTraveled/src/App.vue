@@ -1,9 +1,10 @@
 <template>
   <ion-app>
-    <ion-router-outlet />
+    <RouterView></RouterView>
   </ion-app>
 </template>
 
 <script setup>
 import { IonApp, IonRouterOutlet } from '@ionic/vue';
+import { RouterView } from 'vue-router';
 </script>
