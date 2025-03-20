@@ -67,7 +67,7 @@
       </g-map>
       <div class="routes">
         <route-selector v-if="train_routed" :routesList="routes" :departureTime="selectedDate" :transit="routes_route_type" v-on:routeChosen="displayRoute" v-on:walkChosen="displayWalk" v-on:transitRouteConfirmed="routeConfirmed" v-on:back="back" v-on:walkingRouteConfirmed="walkConfirmed"></route-selector>
-        <waypoint-manager v-if="walking_routed" v-on:waypointsConfirmed="waypointsConfirmed" v-on:customWaypoint="createCustomWaypoint" v-on:waypointsChanged="getEstimates"></waypoint-manager>
+        <waypoint-manager v-if="walking_routed" v-on:waypointsConfirmed="waypointsConfirmed" v-on:waypointsChanged="getEstimates"></waypoint-manager>
       </div>
       <IonButton class="route-button" :disabled="routeable" @click="route()">Route</IonButton>
     </ion-content>
@@ -133,7 +133,6 @@ export default{
       const backend_ip = '127.0.0.1:5000';
       //const backend_ip = '13.40.173.100';
 
-
       // datetime
       // set to current datetime and remove Z to standardize format 
       const selectedDate = ref(new Date().toISOString().slice(0,-1));
@@ -150,16 +149,11 @@ export default{
 
 
       // waypoints
-      const waypoints_received = ref(false);
       const waypoints = ref([]);
       const waypoints_chosen = ref(store.chosen_waypoints.length>0);
 
 
-      // walk selector state
-      const walk_confirmed = ref(false);
-
       // keeps track of waypointed walks
-
       var current_origin;
       var current_destination;
 
@@ -213,37 +207,32 @@ export default{
       // route_type is the currently selected route type by user.
       const route_type = ref(true);
       const route_type_changed = ref(false);
-      // set_route_type is the overall route 
+      // set_route_type is the overall route type
       const set_route_type = ref(true);
       // routes_route_type is changing in a transit route to tell routes what to render.
       const routes_route_type = ref(true);
 
 
-      var transit_route_id = 0;
       const first_route = ref(true);
 
-      // to make sure that we have both origin and destination input before routing
+      // Makes sure that routing is possible.
       const routeable = computed({
         get() {
           // disabled if the map is null or if either origin or dest are null
           var routeable_flag = (g_map_ref.value == null || g_map_ref.value.origin == null || g_map_ref.value.destination == null);
-          
-          console.log('null check');
-          console.log(routeable_flag);
-          console.log(first_route.value);
+
           // if it is not the first route, and the origin/ dest are not null we check if anything has changed.
           if (!first_route.value && !routeable_flag) {
             var changed_flag = (route_type_changed.value || (route_type.value && date_time_changed.value) || store.origin_changed || store.destination_changed)
-            console.log('after changed check')
-            console.log(changed_flag);
             // if it hasn't changed routable_f needs to be true so button is disabled.
             routeable_flag = !changed_flag
           };
-          console.log(routeable_flag);
           return routeable_flag;
         }
       });
 
+
+      // testing functions
       function parentAddMarker() {
         g_map_ref.value.addMarkers(this.markers);
       };
@@ -285,8 +274,8 @@ export default{
       };
 
 
-      function route() {
 
+      function route() {
         first_route.value = false;
         store.origin_changed = false;
         store.destination_changed = false;
@@ -312,7 +301,6 @@ export default{
 
 
       function back() {
-        console.log('going back');
         if (store.walk_state == "walking") {
           if (store.route_number == 0 ) {
             // return to waypoint select
@@ -358,7 +346,7 @@ export default{
 
 
       function stripPoint(points) {
-        // we strip points becuase certain characters in the name can result in errors when receiving request.
+        // we strip points becuase certain characters in the name can result in errors when receiving request in backend.
         let new_points;
         if (Array.isArray(points)) {
           new_points = [];
@@ -367,11 +355,11 @@ export default{
             new_points.push(stripped_point);
           };
         } else {
-          // if not array we assume it is a single point
+          // if not array assume it is a single point
           new_points = {lat:points.lat, lng:points.lng};
         };
         return new_points;
-      }
+      };
 
 
       async function exploreWalk() {
@@ -415,12 +403,6 @@ export default{
         getEstimates();
       };
 
-
-      function createCustomWaypoint() {
-        g_map_ref.value.addCustomMarker();
-      };
-
-
       async function waypointsConfirmed() {
         // waypoints have been confirmed, route through them, with given mode
         const request_str = "http://" + backend_ip + "/alternate_walks?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(stripPoint(g_map_ref.value.origin)) + "&destination=" + JSON.stringify(stripPoint(g_map_ref.value.destination)) + "&waypoints=" + JSON.stringify(stripPoint(store.chosen_waypoints)) + "&waypoint_mode=" + JSON.stringify(store.waypoint_mode) + "&waypoints_ordered=" +JSON.stringify(store.waypoints_ordered);
@@ -443,6 +425,7 @@ export default{
 
 
       function loadNextWaypointWalks() {
+        // re-run each time we need to load a leg of a walk to render on map.
         store.walk_state = "walking";
         let already_visited_flag = false;
         if (!(store.route_number in walkingDirections.value)) {
@@ -477,7 +460,9 @@ export default{
           if (store.route_number+1 < walking_routes.value.length){
             current_destination = store.chosen_waypoints[store.route_number]['location'];
           };
+          // add the direct route for given leg first.
           g_map_ref.value.addWalkingDirections(current_origin, current_destination, [], false);
+          // then the created routes.
           for (const walk of leg) {
               g_map_ref.value.addWalkingDirections(current_origin, current_destination, walk, false);
           };
@@ -489,6 +474,7 @@ export default{
       async function getStationRoutes() {
         // check again as they could have deleted
         if (!(g_map_ref.value.origin instanceof Object & g_map_ref.value.destination instanceof Object)) {
+          //TODO: make this an alert although shouldn't be possible.
           console.log('Both origin and destination need to be input');
         } else {
           const request_str = "http://" + backend_ip + "/get_station_routes?" + "date_time=" + JSON.stringify(selectedDate.value) + "&origin=" + JSON.stringify(g_map_ref.value.origin) + "&destination=" + JSON.stringify(g_map_ref.value.destination);
@@ -534,8 +520,6 @@ export default{
           // should already assign current transit route in displayRoute().
           if (route_id != current_tranit_route.value['route_id']) {
             // not sure we ever get here
-            console.log('WE GET HERE HOW?');
-
             for (const route_dict of train_routes.value) {
               if (route_id == route_dict['route_id']) {
                 current_tranit_route.value = (route_dict);
@@ -593,13 +577,10 @@ export default{
       };
 
       function getEstimates() {
-        console.log('walks for estimates:')
-
+        // 
         if (store.transit_mode === "transit") {
-          // TODO: account for/ displat transit route in estimate.
 
           if (store.transit_route_id != 0) {
-            console.log('re-calculating')
             let current_route;
             for (const route of train_routes.value) {
               if (store.transit_route_id == route['route_id']) {
@@ -608,13 +589,12 @@ export default{
               };
             };
 
-            console.log(current_tranit_route.value['overall_duration'])
-
             const origin_distance = current_route['origin_station']['distance_to_loc'];
             const destination_distance = current_route['destination_station']['distance_to_loc'];
             store.distances_dict[0] = origin_distance;
             store.distances_dict[1] = destination_distance;
           } else {
+            // TODO: currently only create estimates when a transit route has been chosen, but could estimate purely off of origin and dest.
             /*
             console.log(train_routes.value);
             let route_id;
@@ -634,45 +614,30 @@ export default{
             */
           }
         } else if (store.transit_mode === "walking") {
-          //
-          console.log(store.chosen_waypoints);
 
           const origin_loc = stripPoint(g_map_ref.value.origin);
           const dest_loc = stripPoint(g_map_ref.value.destination);
           const waypoint_locs = stripPoint(store.chosen_waypoints);
-
-          console.log(origin_loc);
-          console.log(dest_loc);
-          console.log(distanceCalculator(origin_loc, dest_loc));
-          console.log(waypoint_locs);
 
           // reset dict.
           store.distances_dict = {};
 
           if (!(waypoint_locs.length>0)) {
             store.distances_dict[0] = distanceCalculator(origin_loc, dest_loc);
-            console.log('est:')
-            console.log(store.distances_dict);
-
           } else {
-
             // calculate crow flies distance.
             let previous_point = stripPoint(waypoint_locs[0].location);
             store.distances_dict[0] = distanceCalculator(origin_loc, previous_point);
             let stripped_loc;
             let leg_counter = 1;
             for (const loc of waypoint_locs.slice(1)) {
-              console.log(loc);
+              
               stripped_loc = stripPoint(loc.location);
-              console.log(stripped_loc);
               store.distances_dict[leg_counter] = distanceCalculator(previous_point, stripped_loc);
               previous_point = stripped_loc;
               leg_counter += 1;
             };
             store.distances_dict[leg_counter] = distanceCalculator(previous_point, dest_loc);
-            console.log('est')
-            // estimate.value = distance;
-            console.log(store.distances_dict);
 
           };
           /*
@@ -702,7 +667,6 @@ export default{
           */
         };
         // start point distance gives straight line distance.
-        console.log(store.estimates);
         consolidateEstimate();
       };
 
@@ -713,12 +677,7 @@ export default{
         let duration = {low:0, high:0};
         let distance = {low:0, high:0};
 
-        console.log('consolidation');
-
-        console.log(store.durations_dict);
-        console.log(store.distances_dict);
         for (let i=0; i < Object.keys(store.distances_dict).length; i++) {
-          console.log(i);
           if (i in store.durations_dict) {
             // if the key exists in durations dict the route has been chosen for this leg.
             duration['low'] += store.durations_dict[i];
@@ -748,21 +707,16 @@ export default{
 
         duration_estimate.value = duration;
         distance_estimate.value = distance;
-        console.log(duration_estimate.value);
-        console.log(distance_estimate.value);
         route_stats.value = true;
       };
 
       function loadOriginWalks() {
-
         if (!(store.transit_route_id in originDirections.value)) {
           originDirections.value[store.transit_route_id] = [];
 
           for (const walk of walking_routes.value[store.transit_route_id]['origin_walks']) {
             g_map_ref.value.addWalkingDirections(g_map_ref.value.origin, current_tranit_route.value['origin_station']['location'], walk, false);
           };
-        
-          console.log('setting origin walks');
 
         } else {
           // if the transit route id is already in origin directions then we can assume is already has directions.
@@ -779,8 +733,6 @@ export default{
           for (const walk of walking_routes.value[store.transit_route_id]['destination_walks']) {
             g_map_ref.value.addWalkingDirections(current_tranit_route.value['destination_station']['location'], g_map_ref.value.destination, walk, false);
           };
-
-          console.log('setting destination walks');
 
         } else {
           g_map_ref.value.previousDestDirections();
@@ -801,7 +753,6 @@ export default{
       function displayWalk(summary) {
         // display the chosen walk 
         var current_directions = [];
-        console.log(store.walk_state);
         if (store.walk_state === "origin") {
           current_directions = originDirections.value[store.transit_route_id];
           g_map_ref.value.clearOriginDirections();
@@ -827,11 +778,9 @@ export default{
           store.walk_state = 'destination';
           g_map_ref.value.addWalkingDirections(current_tranit_route.value['destination_station']['location'], g_map_ref.value.destination, walking_dict['waypoints'], true);
         };
-
       };
 
       function walkConfirmed() {
-        console.log('walk confirmed')
         g_map_ref.value.confirmWalk();
         if (store.walk_state === "walking") {
           store.route_number += 1;
@@ -845,15 +794,6 @@ export default{
           train_routed.value = false;
           g_map_ref.value.calcMapBounds()
         };
-      };
-
-      function displayDestinationWalks(route, walks) {
-        for (const walk of walks) {
-           g_map_ref.value.addWalkingDirections(route['destination_station']['location'], g_map_ref.value.destination, walk, false, summaries)();
-        };
-        console.log(route_list);
-
-        routes.value = destinationDirections;
       };
 
 
@@ -894,7 +834,6 @@ export default{
         getStationRoutes,
         displayRoute,
         displayWalk,
-        createCustomWaypoint,
         waypointsConfirmed,
         routeConfirmed,
         getEstimates,
@@ -957,7 +896,7 @@ ion-datetime {
 .routes {
   position: absolute;
   z-index: 1;
-  right: 5%;
+  right: 12%;
   top: 40px;
 }
 </style>

@@ -1,30 +1,30 @@
 <template>
-    <div v-if='store.chosen_waypoints.length>0' id='routes'>
+    <div class="waypoint-manager-box">
+        <div v-if='store.chosen_waypoints.length>0' id='routes'>
 
-        <ion-list>
-            <ion-reorder-group :disabled="store.waypoints_ordered" @ionItemReorder="handleReorder($event)">
-                <ion-item v-for="waypoint in store.chosen_waypoints" :key="waypoint['id']">
-                    <ion-button @click="removeWaypoint(waypoint)" shape="round"> <ion-icon aria-hidden="true" slot="icon-only" :icon="closeOutline"></ion-icon> </ion-button>
-                    <ion-label>  {{ waypoint['name'] }} </ion-label>
-                    <ion-reorder slot="end"></ion-reorder>
-                </ion-item>
-            </ion-reorder-group>
-        </ion-list>
-        <ion-button class="confirm-button" @click="customWaypoint()">Create Custom Waypoint</ion-button>
-        <ion-button class="confirm-button" @click="confirmWaypoints()">Confirm Waypoints</ion-button>
-    </div>
-    <div v-else>
-        <ion-list>
-            <ion-reorder-group :disabled="true">
-                <ion-item>
-                    <ion-label> Choose Waypoints </ion-label>
-                    <ion-reorder slot="end"></ion-reorder>
-                </ion-item>
-            </ion-reorder-group>
-        </ion-list>
-        <ion-button class="confirm-button" @click="customWaypoint()">Create Custom Waypoint</ion-button>
-        <ion-button class="confirm-button" @click="confirmWaypoints()">I'm Feeling Lucky</ion-button>
+            <ion-list>
+                <ion-reorder-group :disabled="store.waypoints_ordered" @ionItemReorder="handleReorder($event)">
+                    <ion-item v-for="waypoint in store.chosen_waypoints" :key="waypoint['id']">
+                        <ion-button @click="removeWaypoint(waypoint)" shape="round"> <ion-icon aria-hidden="true" slot="icon-only" :icon="closeOutline"></ion-icon> </ion-button>
+                        <ion-label>  {{ waypoint['name'] }} </ion-label>
+                        <ion-reorder slot="end"></ion-reorder>
+                    </ion-item>
+                </ion-reorder-group>
+            </ion-list>
+            <ion-button class="confirm-button" @click="confirmWaypoints()">Confirm Waypoints</ion-button>
+        </div>
+        <div v-else>
+            <ion-list>
+                <ion-reorder-group :disabled="true">
+                    <ion-item>
+                        <ion-label> Choose Waypoints </ion-label>
+                        <ion-reorder slot="end"></ion-reorder>
+                    </ion-item>
+                </ion-reorder-group>
+            </ion-list>
+            <ion-button class="confirm-button" @click="confirmWaypoints()">I'm Feeling Lucky</ion-button>
 
+        </div>
     </div>
 </template>
 
@@ -40,7 +40,7 @@ import { store } from '../store.js';
 
 export default {
     name: 'waypoint-manager',
-    emits: ['waypointsConfirmed', 'waypointsChanged', 'customWaypoint'],
+    emits: ['waypointsConfirmed', 'waypointsChanged'],
     components: {
         IonButton,
         IonIcon,
@@ -60,16 +60,12 @@ export default {
 
         const handleReorder = (event) => {
             store.chosen_waypoints = event.detail.complete(store.chosen_waypoints);
-            console.log('After complete', store.chosen_waypoints);
+            // console.log('After complete', store.chosen_waypoints);
             emit('waypointsChanged');
         };
 
         const toggleOrder = () => {
             store.waypoints_ordered = !store.waypoints_ordered;
-        };
-
-        function customWaypoint() {
-            emit('customWaypoint');
         };
 
         function removeWaypoint(waypoint_to_remove) {
@@ -86,7 +82,6 @@ export default {
             closeOutline,
             toggleOrder,
             handleReorder,
-            customWaypoint,
             removeWaypoint,
             confirmWaypoints
         }
@@ -95,6 +90,10 @@ export default {
 </script>
 
 <style>
+.waypoint-manager-box {
+    width: 180%;
+}
+
 .confirm-button {
     z-index: -1;
 }

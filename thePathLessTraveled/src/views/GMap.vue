@@ -40,12 +40,8 @@ export default {
 
         const selected_markers = ref([]);
 
-        const durations_dict = ref({});
-        const distances_dict = ref({});
-
         // markers currently on map
         var current_markers = [];
-        var temp_selected_markers = [];
 
         // custom markers
         var custom_markers = {};
@@ -57,7 +53,6 @@ export default {
 
         var origin_directions = {};
         var dest_directions = {};
-
 
         var walk_walking_directions = [];
         var confirmed_walking_directions = [];
@@ -71,7 +66,6 @@ export default {
 
         var map_listener;
         var marker_listeners = [];
-
 
         // load in the google map
         onMounted(() => {
@@ -87,6 +81,7 @@ export default {
             document.head.appendChild(googleMapScript);
         });
 
+        //TODO: locator button
         /*
         function locatorButtonPressed() {
             navigator.geolocation.getCurrentPosition(
@@ -111,7 +106,6 @@ export default {
             });
 
             // As we are initiating the map also initialize the autocomplete
-
             const options = {
                 fields: ["formatted_address", "geometry", "name"],
                 strictBounds: false,
@@ -128,7 +122,6 @@ export default {
                     // create marker object
                     origin.value = origin_input.geometry.location.toJSON();
                     origin.value['title'] = origin_input.name;
-                    console.log(origin.value);
                     addMarkers([origin.value]);
                     if (destination.value != null) {
                         addMarkers([destination.value]);
@@ -144,25 +137,21 @@ export default {
                     // create marker object
                     destination.value = destination_input.geometry.location.toJSON();
                     destination.value['title'] = destination_input.name;
-                    console.log(destination.value);
                     addMarkers([destination.value]);
                     if (origin.value != null) {
                         addMarkers([origin.value]);
-                    }
-                }
+                    };
+                };
             });
         };
-
 
         function oriChanged() {
             store.origin_changed = true;
         };
 
-
         function destChanged() {
             store.destination_changed = true;
         };
-
 
         function allowMarkerPlacing() {
             map_listener = map.value.addListener("click", (e) => {
@@ -171,15 +160,12 @@ export default {
         };
 
         function revokeMarkerPlacing() {
-            console.log('revoking marker placing privileges');
             map_listener.remove();
         };
 
         function revokeMarkerRemoval() {
-            console.log('revoking marker removal privileges');
             marker_listeners.forEach((e) => e.remove());
-        }
-
+        };
 
         function placeMarker(latLng) {
             const mapMarker = new window.google.maps.Marker({
@@ -189,8 +175,6 @@ export default {
             });
 
             marker_listeners.push(mapMarker.addListener('click', () => {
-                console.log(mapMarker.title);
-                console.log(custom_markers);
                 const id_string = mapMarker.title;
                 custom_markers[id_string].setMap(null);
                 store.chosen_waypoints = store.chosen_waypoints.filter(way => !(Number(id_string) == way.id));
@@ -201,40 +185,27 @@ export default {
             const id_string = custom_marker_id.toString();
             custom_markers[id_string] = mapMarker;
 
-            let marker_dict = {};
-            console.log(latLng.toJSON())
-            marker_dict = {id:custom_marker_id , name: id_string, location: latLng.toJSON()};
+            // let marker_dict = {};
+            let marker_dict = {id:custom_marker_id , name: id_string, location: latLng.toJSON()};
             store.chosen_waypoints.push(marker_dict);
 
             custom_marker_id++;
             emit('markerPlaced');
         };
 
-
         function calcMapBounds() {
             const bounds = new window.google.maps.LatLngBounds();
 
             if (current_markers.length > 1) {
                 current_markers.forEach(m=>{ 
-                    bounds.extend(m.position)
+                    bounds.extend(m.position);
                 });
                 map.value.fitBounds(bounds);
             } else {
                 map.value.setCenter(current_markers[0].position);
-            }
+                map.value.setZoom(13);
+            };
         };
-
-
-        function originWalkBounds() {
-            const bounds = new window.google.maps.LatLngBounds();
-
-        };
-
-
-        function destinationWalkBounds() {
-
-        }
-
 
         function clearMarkers() {
             // clear all markers from map
@@ -286,9 +257,6 @@ export default {
 
         function clearOriginDirections() {
             // clear origin walking directions
-            console.log('clearing origin directions')
-            console.log(origin_directions)
-            console.log(store.transit_route_id)
             origin_directions[store.transit_route_id].forEach(d=>{
                 d.setMap(null);
             });
@@ -336,15 +304,12 @@ export default {
 
             // re-add origin and destination markers
             if (origin.value != null) {
-                console.log(origin.value);
                 addMarkers([origin.value]);
             };
             if (destination.value != null) {
-                console.log(destination.value);
                 addMarkers([destination.value]);
             };
-        }
-
+        };
 
         function addMarkers(marker_array) {
             if (!marker_array.length) return;
@@ -352,15 +317,15 @@ export default {
             marker_array.forEach(marker => {
                 if (marker == null) {
                     return;
-                }
+                };
 
                 let mapMarker;
+                // if there is an image, it is a place we have found en-route.
                 if ("image" in marker) {
-
                     const image = {
                         url: marker.image,
                         scaledSize: new google.maps.Size(30, 30)
-                    }
+                    };
 
                     mapMarker = new window.google.maps.Marker({
                         map: map.value,
@@ -382,17 +347,6 @@ export default {
                     });
                 };
 
-                /*
-                const content_string = 
-                    '<div id="content">' + 
-                    '<h3 id="heading">' + marker.title + '</h1>' + 
-                    '<div id="bodyContent">' +
-                    '<img src="' + marker.image + '" alt="Dinosaur" />'+
-                    '</div>' +   
-                    '</div>';
-
-                console.log(content_string);
-                */
                 // info window
                 mapMarker.infoWindow = new window.google.maps.InfoWindow({
                     content: marker.title
@@ -402,60 +356,13 @@ export default {
                         mapMarker.infoWindow.open(map.value, mapMarker)
                     };
                     selected_markers.value.push(mapMarker);
-                    console.log(selected_markers.value);
 
                     emit('addFixedWaypoint', marker.id);
-
                 });
                 current_markers.push(mapMarker);
             });
             calcMapBounds();
         };
-
-
-        function addCustomMarker() {
-            // currently scrapped,
-
-            const draggableMarker = new window.google.maps.AdvancedMarkerElement({
-                map: map.value,
-                position: map.value.getCenter(),
-                gmpDraggable: true,
-                title: custom_marker_id.toString()
-            });
-
-            draggableMarker.addListener("dragged", (event)=> {
-                const position = draggableMarker.position;
-            });
-
-            emit('addFixedWaypoint', custom_marker_id);
-            custom_marker_id++;
-
-            current_markers.push(draggableMarker);
-            calcMapBounds();
-        }
-
-
-        /*
-        async function addPlaceMarkers(marker_array) {
-            if (!marker_array.length) return;
-
-            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
-            marker_array.forEach(marker => {
-                if (marker == null) {
-                    return;
-                }
-
-                const place = new Place({
-                id: marker.pid
-                })
-                
-
-            });
-
-        };
-        */
-
 
         function addPolyline(polyline_path) {
             const pathing = new window.google.maps.Polyline({
@@ -467,7 +374,6 @@ export default {
             });
             pathing.setMap(map.value);
         };
-
 
         function addTransitDirections(origin, destination, departure_time) {
             // set up directions service and renderer
@@ -598,8 +504,6 @@ export default {
                         directionsRenderer.setDirections(response);
 
                         // if we are rendering all walks in a route
-                        console.log('draggable?')
-                        console.log(draggable);
                         if (!draggable) {
 
                             if (store.walk_state === 'origin') {
@@ -616,7 +520,6 @@ export default {
                                 current_walking_directions[store.route_number].push(directionsRenderer);
 
                             } else {
-                                console.log('rendering dest walks')
                                 if (!(store.transit_route_id in dest_directions)) {
                                     dest_directions[store.transit_route_id] = [];
                                 };
@@ -661,17 +564,12 @@ export default {
                             updateRouteTotals(directions);
 
                             directionsRenderer.addListener("directions_changed", () => {
-                                console.log('directions changed')
-                                directions = directionsRenderer.getDirections()
                                 if (directions) {
-                                    console.log(directions)
                                     updateRouteTotals(directions);
                                 };
                             });
 
                         };
-                        console.log('Walking Response: ');
-                        console.log(response);
                         summaries[store.route_number].push(response['routes'][0]['summary']);
 
                         const walk_obj = {
@@ -694,7 +592,6 @@ export default {
 
 
         function updateRouteTotals(directions) {
-            console.log('updating route totals')
             // updates durations and distances as routes are selected and edited.
             let distance_total = 0;
             let duration_total = 0;
@@ -705,32 +602,16 @@ export default {
                 return;
             };
 
-            console.log('legs:')
             for (let i = 0; i < route.legs.length; i++) {
-                console.log(i);
-                console.log(route.legs[i]);
                 distance_total = route.legs[i].distance.value;
                 duration_total = route.legs[i].duration.value;
             };
-
             // convert to km
-            // TODO: convert at calculation to reduce error.
-            console.log('distance:');
-            console.log(distance_total);
-            /*
-            distance_total = (Math.round((distance_total/ 1000) * 10) / 10).toFixed(1);
-            */
             // convert to minutes
             duration_total = Math.round(duration_total/ 60);
-            console.log('TOTALS');
-
-            console.log(distance_total);
-            console.log(duration_total);
 
             store.durations_dict[store.route_number] = duration_total;
             store.distances_dict[store.route_number] = distance_total;
-            console.log(store.durations_dict);
-            console.log(store.distances_dict);
 
             emit('totalsUpdated');
         };
@@ -741,19 +622,12 @@ export default {
             // ends up with a bunch of directions renderers pointing at nothing, fix to delete null pointers.
 
             if (store.walk_state === 'walking') {
-                console.log('confirming section');
                 confirmed_walking_directions.concat(walk_walking_directions)
-            }
+            };
 
             console.log(confirmed_walking_directions);
         };
 
-
-        // autocomplete
-        /*
-        const origin_ac = new window.google.maps.Autocomplete(origin_input.value)
-        const destination_ac = new window.google.maps.Autocomplete(destination_input.value)
-        */
         return {
             mapDivRef,
             directionPanelRef,
@@ -780,7 +654,6 @@ export default {
             wipeSummaries,
             fullyClearMap,
             addMarkers,
-            addCustomMarker,
             addPolyline,
             addTransitDirections,
             goBack,
