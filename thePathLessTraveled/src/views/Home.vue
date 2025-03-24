@@ -147,16 +147,13 @@ export default{
         date_time_changed.value = true;
       };
 
-
       // waypoints
       const waypoints = ref([]);
       const waypoints_chosen = ref(store.chosen_waypoints.length>0);
 
-
       // keeps track of waypointed walks
       var current_origin;
       var current_destination;
-
 
       // routes walking or transit to be displayed.
       const routes = ref([]);

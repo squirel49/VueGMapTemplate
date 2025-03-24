@@ -1,29 +1,33 @@
 <template>
 
-    <div v-if='transit' id='routes'>
-        <ion-card>
-            <ion-card-subtitle>
-                Your Route
-            </ion-card-subtitle>
-            <ion-card-content>
+    <div v-if='transit' id='routes' class="stats-box">
+        <ion-card color="primary">
+            <ion-card-header>
+                <ion-card-title>
+                    Your Route
+                </ion-card-title>
+            </ion-card-header>
+                <ion-card-content>
 
-                Transit: {{ transit_est_text }}mins <br />
-                Walk: {{ dura_est_text }}mins <br />
-                      {{ dist_est_text }}km
+                    Transit: {{ transit_est_text }}mins <br />
+                    Walk: {{ dura_est_text }}mins <br />
+                    &nbsp;&ensp;&emsp;&emsp;{{ dist_est_text }}km
 
-            </ion-card-content>
+                </ion-card-content>
         </ion-card>
     </div>
-    <div v-else>
+    <div v-else class="stats-box">
 
-        <ion-card>
-            <ion-card-subtitle>
-                Your Route
-            </ion-card-subtitle>
-            <ion-card-content>
-                {{ dura_est_text }}mins <br />
-                {{ dist_est_text }}km
-            </ion-card-content>
+        <ion-card color="primary">
+            <ion-card-header>
+                <ion-card-title>
+                    Your Route
+                </ion-card-title>
+                <ion-card-content>
+                    {{ dura_est_text }}mins <br />
+                    {{ dist_est_text }}km
+                </ion-card-content>
+            </ion-card-header>
         </ion-card>
 
     </div>
@@ -31,7 +35,7 @@
 
 <script>
 import { computed, ref, watch } from 'vue';
-import { IonCard, IonCardContent, IonCardSubtitle } from '@ionic/vue';
+import { IonCard, IonCardContent, IonCardTitle, IonCardSubtitle, IonCardHeader } from '@ionic/vue';
 
 import  { store } from '../store.js';
 
@@ -42,7 +46,9 @@ export default {
     components: {
         IonCard,
         IonCardContent,
-        IonCardSubtitle
+        IonCardTitle,
+        IonCardSubtitle,
+        IonCardHeader
     },
     setup(props) {
 
@@ -102,5 +108,6 @@ export default {
 </script>
 
 <style>
+
 
 </style>

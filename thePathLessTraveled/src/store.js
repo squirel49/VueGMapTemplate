@@ -2,7 +2,7 @@ import { reactive } from 'vue';
 
 export const store = reactive({
     // can either be walking or transit.
-    transit_mode: "transit",
+    transit_mode: "walking",
 
     origin_changed: false,
     destination_changed: false,
@@ -12,24 +12,21 @@ export const store = reactive({
 
     // only used when in transit mode
     walk_state: 'origin',
-    /*
-    origin() {
-        this.walk_state = 'origin';
-    },
-    destination() {
-        this.walk_state = 'destination';
-    },
-    */
+
+    transit_route_id : 0,
+    // TODO: should be leg number
+    route_number: 0,
+
+
     // the modes are:
     // - must pass through all of them
     // - must pass through one of them
     // - preferenced, but can have other routes.
-    transit_route_id : 0,
-    // TODO: should be leg number
-    route_number: 0,
+    // TODO: currently unused
     waypoint_mode: 'all',
 
     waypoints_ordered: false,
+
     chosen_waypoints: [],
     walking_directions: [],
 
