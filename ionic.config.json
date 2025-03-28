@@ -1,0 +1,7 @@
+{
+  "name": "thePathLessTraveled",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
