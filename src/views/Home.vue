@@ -130,8 +130,8 @@ export default{
       const markers = ref([{lat: 51.327040, lng: -0.227660, title:"<strong>Home</strong>"}, {lat: 51.4271, lng: -0.0383, title:"<strong>Issac's</strong>"}])
       const markers2 = ref([{lat: 51.51695758745701, lng:  -0.1769174221255329, title:"Paddington"}])
 
-      const backend_ip = '127.0.0.1:5000';
-      //const backend_ip = '13.40.173.100';
+      //const backend_ip = '127.0.0.1:5000';
+      const backend_ip = '13.40.173.100';
 
       // datetime
       // set to current datetime and remove Z to standardize format 
