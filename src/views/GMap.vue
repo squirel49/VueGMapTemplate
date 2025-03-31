@@ -62,14 +62,14 @@ export default {
 
         var summaries = {};
 
-        var transit_durations = {};
+        //var transit_durations = {};
 
         var map_listener;
         var marker_listeners = [];
 
         // load in the google map
         onMounted(() => {
-            const key = "AIzaSyAD8GTQRF_yUFZcgfUf9eFWlEGoBpe7LwU";
+            const key = "AIzaSyAQ3q2jKH4PQ1mj95wVj-gHXWFBA6vT-3k";
 
             const googleMapScript = document.createElement("script");
             googleMapScript.setAttribute(
@@ -410,7 +410,7 @@ export default {
                     current_transit_directions.push(directionsRenderer);
 
                     const directions = directionsRenderer.getDirections();
-                    transit_durations[store.transit_route_id] = directions.routes[0].legs[i].duration.value;
+                    // transit_durations[store.transit_route_id] = directions.routes[0].legs[i].duration.value;
 
                     // TODO: emit to re-calc estimates. Not hooked up yet.
                     emit('transitRouteRendered');
