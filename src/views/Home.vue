@@ -934,7 +934,7 @@ export default{
   .routes {
     position: absolute;
     z-index: 1;
-    right: 5%;
+    right: 10%;
     top: 40px;
   }
 }

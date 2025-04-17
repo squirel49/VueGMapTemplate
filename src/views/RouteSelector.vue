@@ -121,16 +121,14 @@ export default {
     .sroll-list {
         height: 200px;
         width:90%;
-        overflow: hidden;
-        overflow-y: scroll;
+        overflow: auto;
     }
 }
 
 @media (min-width: 601px) {
     .sroll-list {
-        height: 400px;
-        overflow: hidden;
-        overflow-y: scroll;
+        height: 200px;
+        overflow: auto;
     }
 }
 
