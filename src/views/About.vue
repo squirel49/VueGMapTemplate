@@ -12,7 +12,7 @@ import { RouterLink } from 'vue-router';
         Currently in Beta, I would appreciate feedback at jackmorganfaulkner@gmail.com.
         <br/>
         <nav>
-            <RouterLink to="/home">Home</RouterLink>
+            <RouterLink to="/">Home</RouterLink>
         </nav>
     </body>
 

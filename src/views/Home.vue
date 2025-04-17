@@ -848,32 +848,95 @@ export default{
 </script>
 
 <style lang="css" scoped>
-.menu-button {
-  position: absolute;
-  z-index: 1;
-  left: 1% ;
-  top: 40px;
+
+@media (max-width: 600px){
+  .menu-button {
+    position: absolute;
+    z-index: 1;
+    left: 1% ;
+    top: 0.5%;
+  }
+
+  .route-button {
+    position: absolute;
+    z-index: 1;
+    right: 7%;
+    top: 70px;
+  }
+
+  .datetime-selector {
+    position: absolute;
+    z-index: 1;
+    left: 63%;
+    top: 8px;
+  }
+
+  .transit-selector {
+    position: absolute;
+    z-index: 1;
+    left: 2%;
+    top: 115px;
+  }
+
+  .route-stats-div {
+    position: absolute;
+    z-index: 1;
+    left: 55%;
+    top: 120px;
+  }
+
+  .routes {
+    position: absolute;
+    z-index: 1;
+    left: 5%;
+    bottom: 10px;
+  }
+
 }
 
-.route-stats-div {
-  position: absolute;
-  z-index: 1;
-  left: 7%;
-  top: 120px;
-}
+@media (min-width: 601px) {
 
-.transit-selector {
-  position: absolute;
-  z-index: 1;
-  left: 1.4%;
-  top: 90px;
-}
+  .menu-button {
+    position: absolute;
+    z-index: 1;
+    left: 1% ;
+    top: 40px;
+  }
 
-.datetime-selector {
-  position: absolute;
-  z-index: 1;
-  left: 7%;
-  top: 90px;
+  .route-button {
+    position: absolute;
+    z-index: 1;
+    left: 27%;
+    top: 40px;
+  }
+
+  .datetime-selector {
+    position: absolute;
+    z-index: 1;
+    left: 7%;
+    top: 90px;
+  }
+
+  .transit-selector {
+    position: absolute;
+    z-index: 1;
+    left: 1.4%;
+    top: 90px;
+  }
+
+  .route-stats-div {
+    position: absolute;
+    z-index: 1;
+    left: 7%;
+    top: 120px;
+  }
+
+  .routes {
+    position: absolute;
+    z-index: 1;
+    right: 5%;
+    top: 40px;
+  }
 }
 
 ion-datetime {
@@ -882,19 +945,5 @@ ion-datetime {
 
   border-radius: 16px;
   box-shadow: rgba(var(--ion-color-rose-rgb), 0.3) 0px 10px 15px -3px;
-}
-
-.route-button {
-  position: absolute;
-  z-index: 1;
-  left: 27%;
-  top: 40px;
-}
-
-.routes {
-  position: absolute;
-  z-index: 1;
-  right: 12%;
-  top: 40px;
 }
 </style>

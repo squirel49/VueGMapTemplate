@@ -2,15 +2,10 @@
 
     <div v-if='transit' id='routes' class="stats-box">
         <ion-card color="primary">
-            <ion-card-header>
-                <ion-card-title>
-                    Your Route
-                </ion-card-title>
-            </ion-card-header>
                 <ion-card-content>
 
                     Transit: {{ transit_est_text }}mins <br />
-                    Walk: {{ dura_est_text }}mins <br />
+                    Walk: {{ dura_est_text }}min <br />
                     &nbsp;&ensp;&emsp;&emsp;{{ dist_est_text }}km
 
                 </ion-card-content>
@@ -19,15 +14,10 @@
     <div v-else class="stats-box">
 
         <ion-card color="primary">
-            <ion-card-header>
-                <ion-card-title>
-                    Your Route
-                </ion-card-title>
                 <ion-card-content>
-                    {{ dura_est_text }}mins <br />
+                    {{ dura_est_text }}min <br />
                     {{ dist_est_text }}km
                 </ion-card-content>
-            </ion-card-header>
         </ion-card>
 
     </div>

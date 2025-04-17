@@ -1,38 +1,41 @@
 <template>
 
-    <div v-if='transit' id='routes'>
-        <li style="list-style-type:none;" v-for="route in routesList" :key="route['route_id']">
+    <div v-if='transit' id='routes' class='rsdiv'>
+        <div class='sroll-list'>
+            <li style="list-style-type:none;" v-for="route in routesList" :key="route['route_id']">
 
-            <ion-button @click="routeChosen(route)" expand="block" id="troute-button" class="ion-text-wrap" style="max-width: 400px">
-                {{ route['origin_station']['name'] }} ---> {{ route['destination_station']['name'] }} <br />
-                
-                {{ getChangesText(route) }} <br />
+                <ion-button @click="routeChosen(route)" expand="block" id="troute-button" class="ion-text-wrap" style="max-width: 400px">
+                    {{ route['origin_station']['name'] }} ---> {{ route['destination_station']['name'] }} <br />
+                    
+                    {{ getChangesText(route) }} <br />
 
-                departs at:
-                {{ route['transit_departure_time'] }}<br />
-                <!--departure Time:
-                {{ departureTime }} -->
-                transit duration:
-                {{ Math.round(route['transit_duration']) }}minutes <br />
-                overall duration:
-                {{ Math.round(route['overall_duration']) }}minutes est
-            </ion-button>
-        </li>
-
+                    departs at:
+                    {{ route['transit_departure_time'] }}<br />
+                    <!--departure Time:
+                    {{ departureTime }} -->
+                    transit duration:
+                    {{ Math.round(route['transit_duration']) }}minutes <br />
+                    overall duration:
+                    {{ Math.round(route['overall_duration']) }}minutes est
+                </ion-button>
+            </li>
+        </div>
         <ion-button class="confirm-button" @click="confirmTransitRoute()">Confirm Choice</ion-button>
     </div>
-    <div v-else>
-        <li style="list-style-type:none;" v-for="route in routesList" :key="route['summary']">
+    <div v-else class='rsdiv'>
+        <div class='sroll-list'>
+            <li style="list-style-type:none;" v-for="route in routesList" :key="route['summary']">
 
-        <ion-button @click="walkChosen(route)" expand="block" id="troute-button" class="ion-text-wrap" style="max-width: 400px">
-            {{ route['summary'] }}
+            <ion-button @click="walkChosen(route)" expand="block" id="troute-button" class="ion-text-wrap" style="max-width: 400px">
+                {{ route['summary'] }}
 
-            {{ Math.round(route['duration']) }}minutes
+                {{ Math.round(route['duration']) }}minutes
 
-            {{ route['distance'] }}
+                {{ route['distance'] }}
 
-        </ion-button>
-        </li>
+            </ion-button>
+            </li>
+        </div>
         <ion-button class="back-button" @click="back()"><ion-icon :icon="chevronBackOutline"></ion-icon></ion-button>
         <ion-button class="confirm-button" @click="confirmWalk()">Confirm Choice</ion-button>
     </div>
@@ -108,4 +111,27 @@ export default {
 .confirm-button {
     z-index: -1;
 }
+
+@media (max-width: 600px) {
+    
+    .rsdiv {
+        font-size: 40px;
+    }
+
+    .sroll-list {
+        height: 200px;
+        width:90%;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+}
+
+@media (min-width: 601px) {
+    .sroll-list {
+        height: 400px;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+}
+
 </style>
