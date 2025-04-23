@@ -127,7 +127,7 @@ export default {
 
 @media (min-width: 601px) {
     .sroll-list {
-        height: 200px;
+        height: 400px;
         overflow: auto;
     }
 }
