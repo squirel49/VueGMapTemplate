@@ -69,7 +69,7 @@ export default {
 
         // load in the google map
         onMounted(() => {
-            const key = "AIzaSyAQ3q2jKH4PQ1mj95wVj-gHXWFBA6vT-3k";
+            const key = "Insert Google Maps API key here.";
 
             const googleMapScript = document.createElement("script");
             googleMapScript.setAttribute(
